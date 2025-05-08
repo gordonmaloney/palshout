@@ -9,6 +9,8 @@ import {
 	Typography,
 	Button,
 } from "@mui/material";
+import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
+import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
 
 const GridStyle = {
 	//border: "1px solid grey",
@@ -19,36 +21,45 @@ const GridStyle = {
 	padding: "10px 8px 12px 8px",
 	backgroundColor: "rgba(246, 243, 246, 0.8)",
 	margin: "40px auto 0 auto",
+	display: "flex"
 };
 
 const Landing = () => {
 	return (
 		<div>
 			<Paper style={GridStyle}>
-				<Card
-					component="div"
-					sx={{
-						maxWidth: 270,
-						margin: "auto",
-						boxShadow: 3,
-						borderRadius: 2,
-						transition: "0.3s",
-						"&:hover": { boxShadow: 6 },
-					}}
-				>
-					<Link
-						to="/act/timetodivest"
-						style={{ textDecoration: "none", color: "inherit" }}
+				{ALL_CAMPAIGNS.map((campaign) => (
+					<Card
+						component="div"
+						key={campaign.campaign.id}
+						sx={{
+							display: "inline-block",
+							maxWidth: 270,
+							backgroundColor: "#F0F5FA",
+							margin: "auto",
+							boxShadow: 3,
+							borderRadius: 2,
+							transition: "0.3s",
+							"&:hover": { boxShadow: 6 },
+						}}
 					>
-						<CardContent>
-							<h4 style={{ margin: 0 }}>Time to Divest</h4>
-							<br />
-							The Lothian Pension Fund invests millions of pounds of
-							council-workers' money in propping up Israeli apartheid. Will you
-							write to the pensions committee and demand they vote to divest?
-						</CardContent>
-					</Link>
-				</Card>
+						<Link
+							to={`/act/${campaign.campaign.id}`}
+							style={{ textDecoration: "none", color: "inherit" }}
+						>
+							<CardContent>
+								<h4 style={{ margin: 0 }}>{campaign.campaign.title}</h4>
+								<br />
+								{campaign.campaign.blurb}
+								<br />
+								<br />
+								<center>
+									<Button sx={BtnStyleSmall}>Take Action</Button>
+								</center>
+							</CardContent>
+						</Link>
+					</Card>
+				))}
 			</Paper>
 		</div>
 	);

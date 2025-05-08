@@ -50,4 +50,71 @@ Yours sincerely,
 			customTarget: [""],
 		},
 	},
+	{
+		campaignId: "scot4pal",
+		campaign: {
+			id: "scot4pal",
+			title: "One year till Holyrood",
+			host: "Scotland for Palestine",
+			channel: "email",
+			target: "msps",
+			blurb: `With one year to go until the 2026 Holyrood elections, demand your MSPs back our demands to stand with Palestine:`,
+			link: "https://www.instagram.com/scotlandforpalestine/",
+			prompts: [
+				{
+					id: "story",
+					question: "Why does this matter to you? Your answer will be incorporated into the template email, so let your MSPs know why you care about this so much.",
+					answerType: "text",
+					required: true,
+					answer: null,
+				},
+				{
+					id: "yourname",
+					question: "Your name:",
+					answerType: "text",
+					required: true,
+					answer: null,
+				},
+			],
+			subject: "Stand with Palestine",
+			bcc: "scotland4palestine@gmail.com",
+			template: `Dear MSPs,
+
+<<story>>
+
+I am writing ahead of the upcoming Scottish elections on 7 May 2026. In order to make an informed decision, I would like to know whether you will publicly push for:
+- an end to Scottish government funding for Israeli arms companies
+- concrete steps to help end Israel’s decades-long illegal occupation of Palestine, the root cause of the cycle of violence
+- a cultural and sports boycott for Israel until it complies with international law, and
+- use the International Criminal Court (Scotland) Act 2001 to pursue perpetrators resident in Scotland, including Israeli soldiers who have committed crimes against humanity
+
+Scotland can not be complicit in apartheid, occupation, and genocide.
+
+The Scottish government has always pushed the narrative that it is more progressive and compassionate than the UK government. That it respects human rights and international law.
+But actions have to match the rhetoric, and the Scottish government can no longer hide behind Westminster. It must take heed of international rulings against Israel, an apartheid regime and the world’s longest illegal occupation, that stands accused by the world’s highest court - the International Court of Justice - of genocide.
+As my representative, you must put words into action and push for a lasting and just peace by using the powers at your disposal to hold the Israeli government and those complicit in crimes against humanity to account. Similar to how Scotland stood against past illegal apartheid occupations, you must push for an end to business as usual with Israel until it complies with international law.
+Concrete action to end the genocide
+
+Condemnation of Israel without meaningful action rings hollow and won’t stop Israel from starving Palestinians en masse, from torturing surgeons to death and from assassinating Palestinian journalists as they report on Israel’s crimes.
+No more empty words. No more whitewashing Israel.
+
+During the South African apartheid, Scotland broke ranks with the UK government to lead the anti-apartheid movement.
+
+As Nelson Mandela, was dubbed a ‘terrorist’ by Britain and many other Western nations and languished in prison on Robben Island, in 1981, Glasgow awarded Nelson Mandela the Freedom of the City - the first city in the world to do so. This was followed by Aberdeen in 1984 and Midlothian and Dundee in 1985.
+
+Yet, when it comes to Israel, committing the first live-streamed genocide in history, all we hear are empty words.
+
+I demand:
+- an end to selective justice and hypocrisy
+- an end to whitewashing Israel, and for it to be held to account
+- an end to our hard-earned cash being used to fund Israeli arms and crimes
+
+Our votes matter
+
+As someone who stands against apartheid, occupation, and genocide, I am writing to ask you to tell me what concrete steps you will take to help end the illegal occupation of Palestine and the Palestinian genocide?
+
+<<yourname>>`,
+			customTarget: [""],
+		},
+	},
 ];

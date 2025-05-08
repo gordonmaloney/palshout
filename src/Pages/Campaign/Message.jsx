@@ -26,6 +26,10 @@ import EditableDiv from "../../Components/EditableDiv";
 import { EDINBURGHCLLRS } from "../../Data/EDINBURGHCLLRS";
 
 const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
+	const [Loading, setLoading] = useState(false);
+	const [messaging, setMessaging] = useState([]);
+	const [notMessaging, setNotMessaging] = useState([]);
+
 	//TEMP HERE - FOR TIME TO DIVEST ONLY:
 	const PensionsCttee = [
 		"Mandy Watt",
@@ -35,59 +39,128 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 		"Neil Ross",
 	];
 
-	const [messaging, setMessaging] = useState([]);
-	const [notMessaging, setNotMessaging] = useState([]);
-
 	const [constituent, setConstituent] = useState(false);
 	useEffect(() => {
-		if (constituent) {
-			const constituentString = `As one of your constituents, you are my representative and if you don’t move to support divestment from the named companies above, you will lose my vote in the next election.
+		if (campaign.id == "timetodivest") {
+			if (constituent) {
+				const constituentString = `As one of your constituents, you are my representative and if you don’t move to support divestment from the named companies above, you will lose my vote in the next election.
 
 `;
 
-			setNewTemplate((old) =>
-				old.replace(
-					/(I look forward to your response)/,
-					`${constituentString}$1`
-				)
-			);
+				setNewTemplate((old) =>
+					old.replace(
+						/(I look forward to your response)/,
+						`${constituentString}$1`
+					)
+				);
+			}
 		}
 	}, [constituent]);
 
 	useEffect(() => {
-		//get ward councillors
-		const wardCouncillors = EDINBURGHCLLRS.filter(
-			(cllr) => cllr.ward === adminDivisions.ward
-		);
-
-		// Filter to see if any ward councillors are on the pensions committee
-		const wardPensionsMembers = wardCouncillors.filter((cllr) =>
-			PensionsCttee.includes(cllr.name)
-		);
-		if (wardPensionsMembers.length > 0) {
-			// If there are councillors on the committee in the user's ward, set them as the messaging targets
-			setMessaging(wardPensionsMembers);
-			setConstituent(true);
-		} else {
-			// If no councillors in the user's ward are on the committee, choose a random member from the pensions committee
-			const randomPensionsMemberName =
-				PensionsCttee[Math.floor(Math.random() * PensionsCttee.length)];
-
-			// Find the full details of the randomly selected committee member
-			const randomPensionsMember = EDINBURGHCLLRS.find(
-				(cllr) => cllr.name === randomPensionsMemberName
+		if (campaign.id == "timetodivest") {
+			//get ward councillors
+			const wardCouncillors = EDINBURGHCLLRS.filter(
+				(cllr) => cllr.ward === adminDivisions.ward
 			);
 
-			// Set the random committee member as the messaging target
-			setMessaging([randomPensionsMember]);
-			setConstituent(false);
+			// Filter to see if any ward councillors are on the pensions committee
+			const wardPensionsMembers = wardCouncillors.filter((cllr) =>
+				PensionsCttee.includes(cllr.name)
+			);
+			if (wardPensionsMembers.length > 0) {
+				// If there are councillors on the committee in the user's ward, set them as the messaging targets
+				setMessaging(wardPensionsMembers);
+				setConstituent(true);
+			} else {
+				// If no councillors in the user's ward are on the committee, choose a random member from the pensions committee
+				const randomPensionsMemberName =
+					PensionsCttee[Math.floor(Math.random() * PensionsCttee.length)];
+
+				// Find the full details of the randomly selected committee member
+				const randomPensionsMember = EDINBURGHCLLRS.find(
+					(cllr) => cllr.name === randomPensionsMemberName
+				);
+
+				// Set the random committee member as the messaging target
+				setMessaging([randomPensionsMember]);
+				setConstituent(false);
+			}
 		}
 	}, [adminDivisions]);
+
+	//END OF COUNCIL DIVEST LOGIC
+
+	//FETCH REGIONS
+	const [Regions, setRegions] = useState([]);
+	useEffect(() => {
+		if (campaign.target === "msps") {
+			const load = async () => {
+				try {
+					const response = await fetch(
+						"https://raw.githubusercontent.com/gordonmaloney/rep-data/main/REGIONS.json"
+					);
+					if (!response.ok) {
+						throw new Error("Failed to fetch regions");
+					}
+					const data = await response.json();
+					setRegions(data);
+				} catch (err) {
+					console.error("Could not load regions:", err);
+				}
+			};
+			load();
+		}
+	}, [campaign]);
+
+	//FETCH MSPs
+	const [MSPs, setMSPs] = useState([]);
+	useEffect(() => {
+		if (campaign.target === "msps") {
+			const load = async () => {
+				try {
+					const response = await fetch(
+						"https://raw.githubusercontent.com/gordonmaloney/rep-data/main/MSPs.json"
+					);
+					if (!response.ok) {
+						throw new Error("Failed to fetch MSPs");
+					}
+					const data = await response.json();
+					setMSPs(data);
+				} catch (err) {
+					console.error("Could not load MSPs:", err);
+				}
+			};
+			load();
+		}
+	}, [campaign]);
+
+	//ASSIGN TARGETS
+	useEffect(() => {
+		//MSPs
+		if (campaign.target == "msps" && Regions.length > 1 && MSPs.length > 1) {
+			let constituency = adminDivisions.scotConstituency;
+			let region = Regions.filter(
+				(region) => region.constituency == constituency
+			)[0].region;
+
+			if (campaign.target == "msps" && Regions.length > 1 && MSPs.length > 1) {
+				setMessaging(
+					MSPs.filter(
+						(msp) =>
+							msp.constituency == adminDivisions.scotConstituency ||
+							msp.constituency == region
+					)
+				);
+				setLoading(false);
+			}
+		}
+	}, [adminDivisions, Regions, MSPs]);
 
 	const promptsChanged = false;
 	const { template } = campaign;
 	const [newTemplate, setNewTemplate] = useState(
-		campaign.template + `\n${postcode.trim()}`
+		campaign.template + `\n${postcode.trim().toUpperCase()}`
 	);
 
 	useEffect(() => {
@@ -96,21 +169,22 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 			newTemplate &&
 			!newTemplate.startsWith("Dear")
 		) {
-			setNewTemplate(
-				`Dear${messaging.map(
-					(recipient) => ` Councillor ` + recipient.name
-				)},\n\n${newTemplate}`
-			);
+				setNewTemplate(
+					`Dear${messaging.map(
+						(recipient) => `${campaign.id == "timetodivest" ? ' Councillor ' : ' ' }` + recipient.name
+					)},\n\n${newTemplate}`
+				);
+			
 		} else if (
 			messaging.length > 0 &&
 			newTemplate &&
 			newTemplate.startsWith("Dear")
 		) {
-			console.log('dear')
+			console.log("dear");
 		}
 	}, [messaging]);
 
-	console.log(messaging.map((recipient) => recipient.name));
+	//console.log(messaging.map((recipient) => recipient.name));
 
 	const createPromptAnswers = (prompts) => {
 		return prompts.reduce((acc, prompt) => {
@@ -274,6 +348,10 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 			promptsChanged,
 		]
 	);
+
+	if (Loading) {
+		return <></>;
+	}
 
 	return (
 		<div>
