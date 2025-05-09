@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { Modal, Button, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { BtnStyle } from "../../MUIStyles";
+import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
 import Grid from "@mui/material/Grid2";
 
 const ModalStyle = {
@@ -125,7 +125,7 @@ export const SendModal = ({
 							<Grid item sm={4} xs={12}>
 								<center>
 									<Button
-										sx={BtnStyle}
+										sx={BtnStyleSmall}
 										onClick={() =>
 											navigator.clipboard.writeText(
 												`${messaging.map((targ) => targ.email + `,`)}  ${
@@ -142,7 +142,7 @@ export const SendModal = ({
 							<Grid item sm={4} xs={12}>
 								<center>
 									<Button
-										sx={BtnStyle}
+										sx={BtnStyleSmall}
 										onClick={() => navigator.clipboard.writeText(newSubject)}
 									>
 										Copy subject
@@ -152,7 +152,7 @@ export const SendModal = ({
 							<Grid item sm={4} xs={12}>
 								<center>
 									<Button
-										sx={BtnStyle}
+										sx={BtnStyleSmall}
 										onClick={() => navigator.clipboard.writeText(newTemplate)}
 									>
 										Copy email body
@@ -189,13 +189,13 @@ export const SendModal = ({
 								>
 									<Button
 										onClick={() => handleSend("gmail")}
-										style={{ ...BtnStyle, marginTop: "5px" }}
+										style={{ ...BtnStyleSmall, marginTop: "5px" }}
 									>
 										Send via Gmail
 									</Button>
 									<Button
 										onClick={() => handleSend("yahoo")}
-										style={{ ...BtnStyle, marginTop: "5px" }}
+										style={{ ...BtnStyleSmall, marginTop: "5px" }}
 									>
 										Send via Yahoo
 									</Button>
@@ -276,6 +276,15 @@ export const SendModal = ({
 							</Tooltip>{" "}
 							to copy the link and share it with your friends!
 						</p>
+
+						<span style={{ fontSize: "12px" }}>
+							<em>
+								Didn't work? If your email client didn't open, you can use{" "}
+								<span onClick={() => setNoClient(true)}>
+									<u>copy & paste instead.</u>
+								</span>
+							</em>
+						</span>
 					</>
 				)}
 

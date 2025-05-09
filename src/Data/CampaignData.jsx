@@ -63,7 +63,8 @@ Yours sincerely,
 			prompts: [
 				{
 					id: "story",
-					question: "Why does this matter to you? Your answer will be incorporated into the template email, so let your MSPs know why you care about this so much.",
+					question:
+						"Why does this matter to you? Your answer will be incorporated into the template email, so let your MSPs know why you care about this so much.",
 					answerType: "text",
 					required: true,
 					answer: null,
@@ -77,7 +78,7 @@ Yours sincerely,
 				},
 			],
 			subject: "Stand with Palestine",
-			bcc: "scotland4palestine@gmail.com",
+			bcc: "scotlandforpalestine@gmail.com",
 			template: `Dear MSPs,
 
 <<story>>
