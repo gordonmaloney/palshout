@@ -56,33 +56,60 @@ const FetchTarget = ({
 		setInvalidPC(false);
 		setErrorMessage("");
 
-		try {
-			const uk_data = await fetchUKData(trimmedPostcode);
+			try {
+				const uk_data = await fetchUKData(trimmedPostcode);
 
-			if (uk_data.result.country === "Scotland") {
-				const scotland_data = await fetchScotlandData(trimmedPostcode);
-				setAdminDivisions({
-					constituency: uk_data.result.parliamentary_constituency,
-					ward: uk_data.result.admin_ward,
-					scotConstituency:
-						scotland_data.result.scottish_parliamentary_constituency,
-				});
-			} else {
-				setAdminDivisions({
-					constituency: uk_data.result.parliamentary_constituency,
-					ward: uk_data.result.admin_ward,
-					scotConstituency: "",
-				});
+				if (uk_data.result.country === "Scotland") {
+					const scotland_data = await fetchScotlandData(trimmedPostcode);
+
+					if (
+						scotland_data.result.scottish_parliamentary_constituency !== null
+					) {
+						setAdminDivisions({
+							constituency: uk_data.result.parliamentary_constituency,
+							ward: uk_data.result.admin_ward,
+							scotConstituency:
+								scotland_data.result.scottish_parliamentary_constituency,
+						});
+					} else {
+						console.log(
+							scotland_data.result.codes.scottish_parliamentary_constituency
+						);
+
+						let code =
+							scotland_data.result.codes.scottish_parliamentary_constituency;
+
+						let correctedScotConstituency;
+
+						if (code == "S16000149") {
+							correctedScotConstituency = "Coatbridge and Chryston";
+						}
+						if (code == "S16000150") {
+							correctedScotConstituency = "Glasgow Provan";
+						}
+
+						setAdminDivisions({
+							constituency: uk_data.result.parliamentary_constituency,
+							ward: uk_data.result.admin_ward,
+							scotConstituency: correctedScotConstituency,
+						});
+					}
+				} else {
+					setAdminDivisions({
+						constituency: uk_data.result.parliamentary_constituency,
+						ward: uk_data.result.admin_ward,
+						scotConstituency: "",
+					});
+				}
+			} catch {
+				setInvalidPC(true);
+				setErrorMessage(
+					"Looks like there's something wrong with your postcode. Please check or try again later."
+				);
+				setAdminDivisions({ ward: "", constituency: "", scotConstituency: "" });
+			} finally {
+				setSearching(false);
 			}
-		} catch {
-			setInvalidPC(true);
-			setErrorMessage(
-				"Looks like there's something wrong with your postcode. Please check or try again later."
-			);
-			setAdminDivisions({ ward: "", constituency: "", scotConstituency: "" });
-		} finally {
-			setSearching(false);
-		}
 	};
 
 	return (

@@ -30,6 +30,9 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 	const [messaging, setMessaging] = useState([]);
 	const [notMessaging, setNotMessaging] = useState([]);
 
+
+		const [errorMsg, setErrorMsg] = useState("");
+
 	//TEMP HERE - FOR TIME TO DIVEST ONLY:
 	const PensionsCttee = [
 		"Mandy Watt",
@@ -136,26 +139,39 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 	}, [campaign]);
 
 	//ASSIGN TARGETS
-	useEffect(() => {
-		//MSPs
-		if (campaign.target == "msps" && Regions.length > 1 && MSPs.length > 1) {
-			let constituency = adminDivisions.scotConstituency;
-			let region = Regions.filter(
-				(region) => region.constituency == constituency
-			)[0].region;
+useEffect(() => {
+	//MSPs
 
-			if (campaign.target == "msps" && Regions.length > 1 && MSPs.length > 1) {
-				setMessaging(
-					MSPs.filter(
-						(msp) =>
-							msp.constituency == adminDivisions.scotConstituency ||
-							msp.constituency == region
-					)
-				);
-				setLoading(false);
-			}
+	if (campaign.target == "msps" && !adminDivisions.scotConstituency) {
+		console.log("no scot const");
+		setErrorMsg("No Scottish Constituency found...");
+		setLoading(false);
+	}
+
+	if (
+		adminDivisions.scotConstituency &&
+		campaign.target == "msps" &&
+		Regions.length > 1 &&
+		MSPs.length > 1
+	) {
+		console.log("setting...");
+		let constituency = adminDivisions.scotConstituency;
+		let region = Regions.filter(
+			(region) => region.constituency == constituency
+		)[0].region;
+
+		if (campaign.target == "msps" && Regions.length > 1 && MSPs.length > 1) {
+			setMessaging(
+				MSPs.filter(
+					(msp) =>
+						msp.constituency == adminDivisions.scotConstituency ||
+						msp.constituency == region
+				)
+			);
+			setLoading(false);
 		}
-	}, [adminDivisions, Regions, MSPs]);
+	}
+}, [adminDivisions, Regions, MSPs]);
 
 	const promptsChanged = false;
 	const { template } = campaign;
@@ -353,6 +369,16 @@ const Message = ({ campaign, prompts, adminDivisions, postcode, setStage }) => {
 		return <></>;
 	}
 
+		if (errorMsg !== "") {
+			return (
+				<>
+					Sorry - something has gone wrong while looking up your
+					representative's data. If you could let us know your postcode, we'll
+					try to get it fixed!
+				</>
+			);
+		}
+	
 	return (
 		<div>
 			{campaign.channel == "email" && (
